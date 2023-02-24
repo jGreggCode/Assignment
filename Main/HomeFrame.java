@@ -22,7 +22,7 @@ import java.awt.*;
 
 public class HomeFrame extends JFrame {
 
-    LoginFrame lf;
+    LoginFrame loginFrame;
     IssuanceFrame issuef;
 
     // Prerequisite components //
@@ -146,7 +146,6 @@ public class HomeFrame extends JFrame {
         txtAddress.setText("");
         txtPhoneNo.setText("");
         txtGuardian.setText("");
-        txtIssuedDate.setText("");
     }
 
     // Method to disable all the text boxes
@@ -172,10 +171,11 @@ public class HomeFrame extends JFrame {
     }
     // ---------- //
     
-    public HomeFrame(IssuanceFrame issuef) {
-        //this.lf = lf;
+    public HomeFrame(LoginFrame loginFrame, IssuanceFrame issuef) {
+        this.loginFrame = loginFrame;
         this.issuef = issuef;
         // Home frame configuration
+        setTitle("Home");
         setUndecorated(true);
         setSize(1500, 750);
         getContentPane().setBackground(new Color(0xffffff));
@@ -256,60 +256,78 @@ public class HomeFrame extends JFrame {
         btnGenerate.setBounds(60, 536, 110, 40);
         btnGenerate.addActionListener(e -> {
 
+            int emptyFields = 0;
+
             for (int i = 0; i < txtFeilds.length; i++) {
                 if (txtFeilds[i].getText().isEmpty()) {
                     txtFeilds[i].setBorder(BorderFactory.createLineBorder(Color.red, 1));
+                    emptyFields++;
                 } else {
                     txtFeilds[i].setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
                 }
             }
 
-            if (txtName.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Student Name field is empty", "Empty Field", JOptionPane.ERROR_MESSAGE);
-            } else if (txtYearLevel.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Year Level field is empty", "Empty Field", JOptionPane.ERROR_MESSAGE);
-            } else if (txtProgram.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Course/Program field is empty", "Empty Field", JOptionPane.ERROR_MESSAGE);
-            } else if (txtAddress.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Address field is empty", "Empty Field", JOptionPane.ERROR_MESSAGE);
-            } else if (txtPhoneNo.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Phone Number field is empty", "Empty Field", JOptionPane.ERROR_MESSAGE);
-            } else if (txtGuardian.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Guardian field is empty", "Empty Field", JOptionPane.ERROR_MESSAGE);
-            } else if (txtIssuedDate.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Issued Date is empty", "Empty Field", JOptionPane.ERROR_MESSAGE);
+            if (emptyFields > 1) {
+                JOptionPane.showMessageDialog(null, "Some fields are empty", "Empty Fields", JOptionPane.ERROR_MESSAGE);
+                System.out.println(emptyFields);
             } else {
-                btnGenerate.setEnabled(false);
-                btnNewData.setEnabled(true);
-                btnClear.setEnabled(false);
-
-                String firstName = fullName(txtName.getText())[0];
-                String middileInitial = fullName(txtName.getText())[1];
-                String lastName = fullName(txtName.getText())[2];  
-
-                labelRUserPicture.setIcon(imageResize(randomUserIcon(), iconSize, iconSize));
-
-                String what = null;
-                MaskFormatter mf;
-                try {
-                    mf = new MaskFormatter("**-***-**");
-                    mf.setValueContainsLiteralCharacters(false);
-                    what = mf.valueToString(String.valueOf(idNumber));
-                } catch (ParseException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
+                if (txtName.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Student Name field is empty", "Empty Field", JOptionPane.ERROR_MESSAGE);
+                } else if (txtYearLevel.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Year Level field is empty", "Empty Field", JOptionPane.ERROR_MESSAGE);
+                } else if (txtProgram.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Course/Program field is empty", "Empty Field", JOptionPane.ERROR_MESSAGE);
+                } else if (txtAddress.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Address field is empty", "Empty Field", JOptionPane.ERROR_MESSAGE);
+                } else if (txtPhoneNo.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Phone Number field is empty", "Empty Field", JOptionPane.ERROR_MESSAGE);
+                } else if (txtGuardian.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Guardian field is empty", "Empty Field", JOptionPane.ERROR_MESSAGE);
+                } else if (txtIssuedDate.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Issued Date is empty", "Empty Field", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    btnGenerate.setEnabled(false);
+                    btnNewData.setEnabled(true);
+                    btnClear.setEnabled(false);
+    
+                    String firstName = fullName(txtName.getText())[0];
+                    String middileInitial = fullName(txtName.getText())[1];
+                    String lastName = fullName(txtName.getText())[2]; 
+                    
+                    if (firstName == null) {
+                        firstName = "No First Name";
+                    }
+                    if (middileInitial == null) {
+                        middileInitial = "No Middle Initial";
+                    }
+                    if (lastName == null) {
+                        lastName = "No Lastname";
+                    }
+    
+                    labelRUserPicture.setIcon(imageResize(randomUserIcon(), iconSize, iconSize));
+    
+                    String what = null;
+                    MaskFormatter mf;
+                    try {
+                        mf = new MaskFormatter("**-***-**");
+                        mf.setValueContainsLiteralCharacters(false);
+                        what = mf.valueToString(String.valueOf(idNumber));
+                    } catch (ParseException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
+    
+                    labelRProgram.setText(txtProgram.getText());
+                    labelRID.setText(what);
+                    labelSurname.setText(lastName);
+                    labelFirstAndMiddleInitial.setText(firstName + " " + middileInitial);
+                    labelRSignature.setText(txtName.getText());
+                    labelRSignature.setFont(new Font("Kunstler Script", Font.PLAIN, 20));
+                    labelRIssuedDate.setText("Date Issued: " + dateToday);
+                    clearAll();
+                    disableAll();
                 }
-
-                labelRProgram.setText(txtProgram.getText());
-                labelRID.setText(what);
-                labelSurname.setText(lastName);
-                labelFirstAndMiddleInitial.setText(firstName + " " + middileInitial);
-                labelRSignature.setText(txtName.getText());
-                labelRIssuedDate.setText("Date Issued: " + dateToday);
-                clearAll();
-                disableAll();
             }
-
             
         });
 
@@ -332,6 +350,7 @@ public class HomeFrame extends JFrame {
             labelSurname.setText("Lastname");
             labelFirstAndMiddleInitial.setText("First Name, Middle Initital");
             labelRSignature.setText("Signature");
+            labelRSignature.setFont(new Font("Verdana", Font.BOLD, 20));
             labelRIssuedDate.setText("Date Issued: --");
 
         });
@@ -348,7 +367,7 @@ public class HomeFrame extends JFrame {
         btnLogout.setBounds(480, 536, 110, 40);
         btnLogout.addActionListener(e -> {
             this.dispose();
-            lf.setVisible(true);
+            loginFrame.setVisible(true);
         });
 
         btnIssuance.setText("Proceed");
@@ -357,7 +376,10 @@ public class HomeFrame extends JFrame {
         btnIssuance.setBackground(new Color(0x34418e));
         btnIssuance.setBounds(520, 606, 110, 40);
         btnIssuance.addActionListener(e -> {
-            issuef.setVisible(true);
+            int answer = JOptionPane.showConfirmDialog(null, "Do you want to proceed to Issuance Of Book?", "Are you sure?", JOptionPane.YES_NO_OPTION);
+            if (answer == 0) {
+                issuef.setVisible(true);
+            } 
         });
 
         panelLeft.add(labelBanner);
@@ -432,7 +454,7 @@ public class HomeFrame extends JFrame {
         labelRProgram.setHorizontalAlignment(JLabel.CENTER);
 
         labelRSignature.setText("Signature");
-        labelRSignature.setFont(new Font("Palace Script MT", Font.BOLD, 20));
+        labelRSignature.setFont(new Font("Verdana", Font.BOLD, 20));
         labelRSignature.setBounds(0, 536, 670, 50);
         labelRSignature.setHorizontalAlignment(JLabel.CENTER);
 

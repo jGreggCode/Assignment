@@ -113,6 +113,7 @@ public class IssuanceFrame extends JFrame implements ActionListener, MouseListen
         setUndecorated(true);
         setSize(1300, 750);
         getContentPane().setBackground(new Color(24,29,64,255));
+        setTitle("Issueance Of Book");
         setLayout(null);
         setResizable(false);
         setLocationRelativeTo(null);
@@ -405,19 +406,21 @@ public class IssuanceFrame extends JFrame implements ActionListener, MouseListen
     // Mouse Events
     @Override
     public void mouseClicked(MouseEvent e) {
-        //
+        if (e.getSource() == btnBack) {
+            this.dispose();
+        }
+        
+        if (e.getSource() == btnLogout) {
+            System.exit(0);
+        }
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'mousePressed'");
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'mouseReleased'");
     }
 
     @Override

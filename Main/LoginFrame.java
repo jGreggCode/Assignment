@@ -7,26 +7,34 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import java.awt.Font;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
+
+import java.awt.event.*;    
+import Jswing.JCheckBoxCustom;
+
 import javax.swing.JPanel;
 
 public class LoginFrame extends JFrame {
 
-    HomeFrame hf = new HomeFrame(this);
+    // Prerequisite Components/Variables
+    IssuanceFrame issueFrame = new IssuanceFrame();
+    HomeFrame homeFrame = new HomeFrame(this, issueFrame);
+
+    LoginPanel loginPanel = new LoginPanel(this, homeFrame);
+
     private JLabel background = new JLabel();
-    LoginPanel loginPanel = new LoginPanel(this, hf);
 
     // Images
     ImageIcon img = new ImageIcon(getClass().getResource("/Images/NUBackground.png"));
     ImageIcon imgLogo = new ImageIcon(getClass().getResource("/Images/NULogo.png"));
     
     public LoginFrame() {
+        // Configure Login frame
         setTitle("NU Library System");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1880, 901);
@@ -45,14 +53,21 @@ public class LoginFrame extends JFrame {
 
     public class LoginPanel extends JPanel implements ActionListener {
 
+        // Login error count
         int count = 0;
+        
+        // Prerequisite Components/Variables
         LoginFrame lf;
         HomeFrame hf;
 
+        // Default Account
         String email = "felicisimo@edu.ph";
         String pass = "166509";
 
+        // Bottom Panel
         private JPanel panelBottom = new JPanel();
+
+        // Login Panel Labels, textfields, separators, checkbox, and buttons
         private JLabel labelFooter = new JLabel();
         private JLabel logo = new JLabel();
         private JLabel labelLogin = new JLabel();
@@ -62,9 +77,11 @@ public class LoginFrame extends JFrame {
         private CustomPasswordField password = new CustomPasswordField();
         private JSeparator usersep = new JSeparator();
         private JSeparator passsep = new JSeparator();
-        private JButton btnLogin = new JButton(),
-        btnClear = new JButton();
+        private JButton btnLogin = new JButton();
+        private JButton btnClear = new JButton();
+        private JCheckBoxCustom chkShowPassword = new JCheckBoxCustom();
 
+        // Images
         ImageIcon imgLogo = new ImageIcon(getClass().getResource("/Images/NUBanner.png"));
         Image image = imgLogo.getImage();
         Image resizedImg = image.getScaledInstance(100, 39, Image.SCALE_SMOOTH);
@@ -116,6 +133,14 @@ public class LoginFrame extends JFrame {
             labelForgotPass.setCursor(new Cursor(Cursor.HAND_CURSOR));
             labelForgotPass.setBounds(50, 250, 150, 25);
             add(labelForgotPass);
+
+            chkShowPassword.setText("Show password");
+            chkShowPassword.setForeground(Color.black);
+            chkShowPassword.setFont(new Font("Monoscape", Font.PLAIN, 11));
+            chkShowPassword.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            chkShowPassword.setBounds(245, 250, 150, 25);
+            chkShowPassword.addActionListener(this);
+            add(chkShowPassword);
             
             labelUseApp.setText("Use an app instead");
             labelUseApp.setForeground(new Color(0x34418e));
@@ -143,7 +168,7 @@ public class LoginFrame extends JFrame {
             btnClear.addActionListener(this);
             add(btnClear);
             
-            String stringFooter = "This site is operated by Microsoft on behalf of National University and is for the exclusive use of NU Employees, Students, and Partners. Visit www.national-u.edu.ph for details. Visit the IT Resource Office of your School branch or email itro@national-u.edu.ph";
+            String stringFooter = "This program is made for assignment purposes only and is for the exclusive use of NU Employees, Students, and Partners. Visit www.national-u.edu.ph for details. Visit the IT Resource Office of your School branch or email itro@national-u.edu.ph";
             labelFooter.setText("<html>"+ stringFooter +"</html>");
             labelFooter.setBounds(20, 0, 370, 150);
             labelFooter.setFont(new Font("Monoscape", Font.PLAIN, 15));
@@ -151,67 +176,77 @@ public class LoginFrame extends JFrame {
             
             add(panelBottom);
             panelBottom.add(labelFooter);
+
+            lf.getRootPane().setDefaultButton(btnLogin);
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
 
-           String userPassword = String.valueOf(password.getPassword());
+            if (e.getSource() == chkShowPassword) {
+                if (chkShowPassword.isSelected()) {
+                    password.setEchoChar((char)0); 
+                 } else {
+                    password.setEchoChar('*');
+                 }
+            }
 
-           if (e.getSource() == btnClear) {
-                username.setText("");
-                password.setText("");
-           }
+            String userPassword = String.valueOf(password.getPassword());
 
-           if (e.getSource() == btnLogin) {
-
-            if(count <= 4) {
-
-                if (username.getText().equalsIgnoreCase(email) && userPassword.equals(pass)) {
-                    int answer = JOptionPane.showConfirmDialog(null, "Do you want to proceed to the main page?", "Login successfully", JOptionPane.YES_NO_OPTION);
-                    if (answer == 0) {
-                        username.setText("");
-                        password.setText("");
-                        lf.dispose();
-                        hf.setVisible(true);
-                    } else if (answer == 1) {
-                        username.setText("");
-                        password.setText("");
-                        count = 0;
-                    } 
-                } else if (username.getText().equalsIgnoreCase(email) && !userPassword.equals(pass)) {
-                    count++;
-                    JOptionPane.showMessageDialog(null, "Password is incorrect", "Login failed", JOptionPane.ERROR_MESSAGE);
-                    password.setText("");
-                } else if (!username.getText().equalsIgnoreCase(email) && userPassword.equals(pass)) {
-                    count++;
-                    JOptionPane.showMessageDialog(null, "Username is incorrect", "Login failed", JOptionPane.ERROR_MESSAGE);
-                    username.setText("");
-                } else {
-                    count++;
+            if (e.getSource() == btnClear) {
                     username.setText("");
                     password.setText("");
-                    JOptionPane.showMessageDialog(null, "Username and password are incorrect", "Login failed", JOptionPane.ERROR_MESSAGE);
+            }
+
+            if (e.getSource() == btnLogin) {
+
+                if(count <= 4) {
+
+                    if (username.getText().equalsIgnoreCase(email) && userPassword.equals(pass)) {
+                        int answer = JOptionPane.showConfirmDialog(null, "Do you want to proceed to the main page?", "Login successfully", JOptionPane.YES_NO_OPTION);
+                        if (answer == 0) {
+                            username.setText("");
+                            password.setText("");
+                            lf.dispose();
+                            hf.setVisible(true);
+                        } else if (answer == 1) {
+                            username.setText("");
+                            password.setText("");
+                            count = 0;
+                        } 
+                    } else if (username.getText().equalsIgnoreCase(email) && !userPassword.equals(pass)) {
+                        count++;
+                        JOptionPane.showMessageDialog(null, "Password is incorrect", "Login failed", JOptionPane.ERROR_MESSAGE);
+                        password.setText("");
+                    } else if (!username.getText().equalsIgnoreCase(email) && userPassword.equals(pass)) {
+                        count++;
+                        JOptionPane.showMessageDialog(null, "Username is incorrect", "Login failed", JOptionPane.ERROR_MESSAGE);
+                        username.setText("");
+                    } else {
+                        count++;
+                        username.setText("");
+                        password.setText("");
+                        JOptionPane.showMessageDialog(null, "Username and password are incorrect", "Login failed", JOptionPane.ERROR_MESSAGE);
+                    }
+
+                }
+
+                if (count == 4) {
+                    username.setText("");
+                    password.setText("");
+                    username.setEnabled(false);
+                    password.setEnabled(false);
+                    btnLogin.setEnabled(false);
+                    btnClear.setEnabled(false);
                 }
 
             }
 
-            if (count == 4) {
-                username.setText("");
-                password.setText("");
-                username.setEnabled(false);
-                password.setEnabled(false);
-                btnLogin.setEnabled(false);
-                btnClear.setEnabled(false);
+            if (e.getSource() == btnClear) {
+
             }
-
-           }
-
-           if (e.getSource() == btnClear) {
-
-           }
-            
-        }
+                
+            }
     }
 
     public class CustomTextField extends JTextField {
