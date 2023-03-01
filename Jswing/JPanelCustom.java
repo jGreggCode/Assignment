@@ -62,6 +62,7 @@ public class JPanelCustom extends JPanel {
 
     public JPanelCustom() {
         setOpaque(false);
+        
     }
 
     @Override

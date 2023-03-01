@@ -22,8 +22,9 @@ import javax.swing.JPanel;
 public class LoginFrame extends JFrame {
 
     // Prerequisite Components/Variables
-    IssuanceFrame issueFrame = new IssuanceFrame();
-    HomeFrame homeFrame = new HomeFrame(this, issueFrame);
+    ResultFrame resultFrame = new ResultFrame(null);
+    IssuanceFrame issueFrame = new IssuanceFrame(resultFrame);
+    HomeFrame homeFrame = new HomeFrame(this, issueFrame, resultFrame);
 
     LoginPanel loginPanel = new LoginPanel(this, homeFrame);
 
@@ -80,6 +81,8 @@ public class LoginFrame extends JFrame {
         private JButton btnLogin = new JButton();
         private JButton btnClear = new JButton();
         private JCheckBoxCustom chkShowPassword = new JCheckBoxCustom();
+        
+        char def = password.getEchoChar();
 
         // Images
         ImageIcon imgLogo = new ImageIcon(getClass().getResource("/Images/NUBanner.png"));
@@ -187,7 +190,7 @@ public class LoginFrame extends JFrame {
                 if (chkShowPassword.isSelected()) {
                     password.setEchoChar((char)0); 
                  } else {
-                    password.setEchoChar('*');
+                    password.setEchoChar(def);
                  }
             }
 

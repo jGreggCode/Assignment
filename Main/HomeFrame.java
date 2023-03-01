@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.text.MaskFormatter;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,12 +19,15 @@ import Jswing.JButtonCustomSolid;
 import Jswing.JButtonCustomTransparent;
 import Jswing.JPanelCustom;
 import Jswing.JTextFieldCustom;
+import Session.User;
+
 import java.awt.*;
 
 public class HomeFrame extends JFrame {
 
     LoginFrame loginFrame;
     IssuanceFrame issuef;
+    ResultFrame res;
 
     // Prerequisite components //
 
@@ -46,6 +50,7 @@ public class HomeFrame extends JFrame {
     ImageIcon user3 = new ImageIcon(getClass().getResource("/Images/user3.png"));
     ImageIcon user4 = new ImageIcon(getClass().getResource("/Images/user4.png"));
     ImageIcon user5 = new ImageIcon(getClass().getResource("/Images/user5.png"));
+    ImageIcon user = new ImageIcon(getClass().getResource("/Images/user.jpg"));
 
     // Panels
     private JPanelCustom panelLeft = new JPanelCustom();
@@ -99,8 +104,8 @@ public class HomeFrame extends JFrame {
     // Random image
     public ImageIcon randomUserIcon() {
         Random random = new Random();
-        ImageIcon[] usersIcon = {user1, user2, user3, user4, user5};
-        int rd = random.nextInt(5);
+        ImageIcon[] usersIcon = {user, user1, user2, user3, user4, user5};
+        int rd = random.nextInt(1,6);
         System.out.println(rd);
         ImageIcon selectedIcon = usersIcon[rd];
         return selectedIcon;
@@ -171,9 +176,10 @@ public class HomeFrame extends JFrame {
     }
     // ---------- //
     
-    public HomeFrame(LoginFrame loginFrame, IssuanceFrame issuef) {
+    public HomeFrame(LoginFrame loginFrame, IssuanceFrame issuef, ResultFrame res) {
         this.loginFrame = loginFrame;
         this.issuef = issuef;
+        this.res = res;
         // Home frame configuration
         setTitle("Home");
         setUndecorated(true);
@@ -256,6 +262,9 @@ public class HomeFrame extends JFrame {
         btnGenerate.setBounds(60, 536, 110, 40);
         btnGenerate.addActionListener(e -> {
 
+            String[] programs = {"BSIT","BSBA","DENTECH","PSYCHOLOGY"};
+            String chosenProg = txtProgram.getText().toUpperCase();
+            
             int emptyFields = 0;
 
             for (int i = 0; i < txtFeilds.length; i++) {
@@ -285,7 +294,12 @@ public class HomeFrame extends JFrame {
                     JOptionPane.showMessageDialog(null, "Guardian field is empty", "Empty Field", JOptionPane.ERROR_MESSAGE);
                 } else if (txtIssuedDate.getText().isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Issued Date is empty", "Empty Field", JOptionPane.ERROR_MESSAGE);
+                } else if (!Arrays.stream(programs).anyMatch(chosenProg::equals)) {
+                    JOptionPane.showMessageDialog(null, "Invalid course program", "Generate Failed", JOptionPane.ERROR_MESSAGE);
+                    txtProgram.setBorder(BorderFactory.createLineBorder(Color.red, 1));
                 } else {
+                    txtProgram.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+                    btnIssuance.setEnabled(true);
                     btnGenerate.setEnabled(false);
                     btnNewData.setEnabled(true);
                     btnClear.setEnabled(false);
@@ -324,6 +338,16 @@ public class HomeFrame extends JFrame {
                     labelRSignature.setText(txtName.getText());
                     labelRSignature.setFont(new Font("Kunstler Script", Font.PLAIN, 20));
                     labelRIssuedDate.setText("Date Issued: " + dateToday);
+
+                    User.idNumber = what;
+                    User.name = txtName.getText();
+                    User.yearLevel = txtYearLevel.getText();
+                    User.program = txtProgram.getText();
+                    User.address = txtAddress.getText();
+                    User.phoneNumber = txtPhoneNo.getText();
+                    User.guardian = txtGuardian.getText();
+                    User.issuedDate = dateToday;
+
                     clearAll();
                     disableAll();
                 }
@@ -340,6 +364,7 @@ public class HomeFrame extends JFrame {
         btnNewData.addActionListener(e -> {
             clearAll();
             enableAll();
+            btnIssuance.setEnabled(false);
             btnNewData.setEnabled(false);
             btnGenerate.setEnabled(true);
             btnClear.setEnabled(true);
@@ -372,13 +397,14 @@ public class HomeFrame extends JFrame {
 
         btnIssuance.setText("Proceed");
         btnIssuance.setFocusable(false);
+        btnIssuance.setEnabled(false);
         btnIssuance.setForeground(Color.white);
         btnIssuance.setBackground(new Color(0x34418e));
         btnIssuance.setBounds(520, 606, 110, 40);
         btnIssuance.addActionListener(e -> {
             int answer = JOptionPane.showConfirmDialog(null, "Do you want to proceed to Issuance Of Book?", "Are you sure?", JOptionPane.YES_NO_OPTION);
             if (answer == 0) {
-                issuef.setVisible(true);
+                new IssuanceFrame(res).setVisible(true);
             } 
         });
 
