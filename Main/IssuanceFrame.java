@@ -6,6 +6,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import java.awt.event.*;
@@ -497,7 +498,12 @@ public class IssuanceFrame extends JFrame implements ActionListener, MouseListen
     @Override
     public void mouseClicked(MouseEvent e) {
         if (e.getSource() == btnBack) {
-            this.dispose();
+            int answer = JOptionPane.showConfirmDialog(null, "Do you want to proceed to the Home page?", "Are you sure?", JOptionPane.YES_NO_OPTION);
+            if (answer == 0) {
+                this.dispose();
+            } else {
+                
+            }
         }
         
         if (e.getSource() == btnLogout) {
